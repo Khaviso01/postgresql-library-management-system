@@ -17,7 +17,6 @@ A relational database project that manages a library's **books**, **authors**, a
 9. [Running in pgAdmin](#running-in-pgadmin)
 10. [Running in psql](#running-in-psql)
 11. [Design Notes and Known Limitations](#design-notes-and-known-limitations)
-12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -401,18 +400,3 @@ psql -U postgres -d librarydb -f library.sql
    ```
 
 5. **Case sensitivity.** `=` and `LIKE` are case-sensitive in PostgreSQL; `ILIKE` (used for the "George" search) is not.
-
----
-
-## Troubleshooting
-
-| Problem | Likely cause and fix |
-|---------|----------------------|
-| `duplicate key value violates unique constraint "authors_pkey"` or `"books_pkey"` | The `SERIAL` sequence is behind after inserting explicit IDs. Run the `setval` statements in [Design Note 2](#design-notes-and-known-limitations). |
-| `duplicate key value violates unique constraint "patrons_pkey"` | You reused an existing patron ID. `patrons.id` is not auto-generated — check the next free ID first (see [Design Note 1](#design-notes-and-known-limitations)). |
-| `insert or update on table "books" violates foreign key constraint "books_author_id_fkey"` | The `author_id` you used does not exist in `authors`. Insert the author first, or check its ID with `SELECT id FROM authors WHERE name = '...'`. |
-| `relation "books" does not exist` | You are connected to the wrong database, or the tables haven't been created yet in this session. Check with `SELECT current_database();` and `\dt`. |
-| A `SELECT` returns 0 rows unexpectedly | Check spelling/case (`=` is case-sensitive; try `ILIKE`), and confirm the row wasn't removed by an earlier `DELETE` (e.g. *Moby-Dick* and F. Scott Fitzgerald's books, if Sprint 5 has already been run). |
-| A patron's `borrowed_books` still lists a book that was deleted | Expected with the current schema — see [Design Note 3](#design-notes-and-known-limitations). Clean it up manually if needed:<br>`UPDATE patrons SET borrowed_books = ARRAY(SELECT b FROM unnest(borrowed_books) AS b WHERE b IN (SELECT id FROM books));` |
-
----
