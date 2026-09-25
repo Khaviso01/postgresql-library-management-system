@@ -147,7 +147,7 @@ INSERT INTO patrons (id, name, email, borrowed_books) VALUES
 (10, 'Jack Anderson', 'jack@example.com', ARRAY[7, 8]);
 ```
 
-> Note: in this sample data, some patrons already hold books (e.g. Bob Smith holds books 1 and 2), but every book above is inserted with `available = TRUE`. The two are not automatically kept in sync — see [Design Notes](#design-notes-and-known-limitations).
+> Note: in this sample data, some patrons already hold books (e.g. Bob Smith holds books 1 and 2), but every book above is inserted with `available = TRUE`. The two are not automatically kept in sync. See [Design Notes](#design-notes-and-known-limitations).
 
 ---
 
@@ -242,7 +242,7 @@ Because `books.author_id` was created with `ON DELETE CASCADE`, deleting author 
 SELECT title FROM books WHERE author_id = 3;
 ```
 
-> After these two deletes, book id `6` (`Moby-Dick`) no longer exists, but patron id `6` (Frank Moore) does **not** hold it — his `borrowed_books` array is `{4, 5}`, so this particular delete happens not to create a dangling reference. In general, though, deleting a book that *is* currently borrowed will leave its ID behind in a patron's array. See [Design Notes](#design-notes-and-known-limitations).
+> After these two deletes, book id `6` (`Moby-Dick`) no longer exists, but patron id `6` (Frank Moore) does **not** hold it. His `borrowed_books` array is `{4, 5}`, so this particular delete happens not to create a dangling reference. In general, though, deleting a book that *is* currently borrowed will leave its ID behind in a patron's array. See [Design Notes](#design-notes-and-known-limitations).
 
 ---
 
